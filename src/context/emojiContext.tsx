@@ -1,7 +1,7 @@
 "use client";
 
 import { getExpressionEmojis } from "@/services/emojiService";
-import { EmojiList } from "@/type/emoji";
+import { Emoji, EmojiList } from "@/type/emoji";
 import {
   createContext,
   FC,
@@ -13,8 +13,9 @@ import {
 
 interface EmojiContextType {
   allEmoji: EmojiList | undefined;
-//   randomEmoji: EmojiList | undefined;
-  setAllEmoji: () => void;
+  randomEmoji: Emoji[] | undefined;
+  setAllEmoji: () => Promise<void>;
+  generateRandomEmojis: () => void; // No longer returns emojis directly, just updates state
 }
 
 const EmojiContext = createContext<EmojiContextType | undefined>(undefined);
@@ -28,17 +29,21 @@ export const useEmojiContext = () => {
 };
 
 export const EmojiProvider: FC<{ children: ReactNode }> = ({ children }) => {
-  const [allEmoji, setAllEmoji] = useState<EmojiList | undefined>();
-//   const [randomEmoji, setRandomEmoji] = useState<EmojiList | undefined>();
+  const [allEmoji, setAllEmoji] = useState<EmojiList | undefined>(undefined);
+  const [randomEmoji, setRandomEmoji] = useState<Emoji[] | undefined>(
+    undefined
+  );
 
   const updateAllEmoji = async (): Promise<void> => {
-    const emojis = await getExpressionEmojis();
+    const emojis: EmojiList = await getExpressionEmojis();
     setAllEmoji(emojis);
   };
 
-//   const generateRandomEmojis = () => {
-    
-//   };
+  const generateRandomEmojis = () => {
+    if (!allEmoji || allEmoji.length === 0) return;
+    const shuffled = [...allEmoji].sort(() => Math.random() - 0.5).slice(0, 50);
+    setRandomEmoji(shuffled);
+  };
 
   useEffect(() => {
     updateAllEmoji();
@@ -46,7 +51,12 @@ export const EmojiProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
   return (
     <EmojiContext.Provider
-      value={{ allEmoji, setAllEmoji: updateAllEmoji }}
+      value={{
+        allEmoji,
+        randomEmoji,
+        setAllEmoji: updateAllEmoji,
+        generateRandomEmojis,
+      }}
     >
       {children}
     </EmojiContext.Provider>

@@ -6,6 +6,4 @@ export interface Emoji {
     unicode: string[];
 }
 
-export interface EmojiList {
-    emoji: Emoji[];
-}
+export type EmojiList = Emoji[];
