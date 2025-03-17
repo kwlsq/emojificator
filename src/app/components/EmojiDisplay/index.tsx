@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useEmojiContext } from "@/context/emojiContext";
 import { motion, AnimatePresence } from "framer-motion";
+import { categoryMessages } from "@/const/categoryText";
 
 const EmojiDisplay = () => {
   const { randomEmoji, generateRandomEmojis } = useEmojiContext();
@@ -35,6 +36,13 @@ const EmojiDisplay = () => {
     shuffleLoop();
   };
 
+  const emojiGroup =
+    randomEmoji && randomEmoji.length > 0 ? randomEmoji[0].group : null;
+  const groupMessage = emojiGroup
+    ? categoryMessages[emojiGroup] || "An emoji is worth a thousand words!"
+    : "";
+  console.log(emojiGroup);
+
   return (
     <div className="flex flex-col items-center gap-4">
       <button
@@ -51,7 +59,7 @@ const EmojiDisplay = () => {
         {randomEmoji && randomEmoji.length > 0 && (
           <motion.div
             key={randomEmoji[0].unicode[0]}
-            className="text-9xl hover:cursor-pointer"
+            className="text-9xl"
             animate={{ opacity: 1, y: 0, scale: [1, 1.1, 1] }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
           >
@@ -60,15 +68,10 @@ const EmojiDisplay = () => {
         )}
       </AnimatePresence>
 
-      {!isShuffling && randomEmoji ? (
+      {!isShuffling && groupMessage && (
         <h3 className="text-sm italic text-[var(--slate)] max-w-56 text-center">
-          No matter what your emoji is, <br />
-          don&apos;t forget to smile!
-          <br />
-          Pahamm!!!??!
+          {groupMessage}
         </h3>
-      ) : (
-        ""
       )}
     </div>
   );
