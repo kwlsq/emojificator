@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { DM_Sans } from "next/font/google";
 import "./globals.css";
+import { EmojiProvider } from "@/context/emojiContext";
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
@@ -19,9 +20,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${dmSans.variable} antialiased  flex justify-center`}>
-        {children}
-      </body>
+      <EmojiProvider>
+        <body className={`${dmSans.variable} antialiased  flex justify-center`}>
+          {children}
+        </body>
+      </EmojiProvider>
     </html>
   );
 }
